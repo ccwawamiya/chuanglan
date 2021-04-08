@@ -1,4 +1,5 @@
 <?php
+
 namespace Chuanglan;
 /* *
  * 类名：ChuanglanSmsApi
@@ -11,20 +12,9 @@ namespace Chuanglan;
  * 该代码仅供学习和研究创蓝接口使用，只是提供一个参考。
  */
 
-class ChuanglanSmsApi {
-
-	//参数的配置 请登录zz.253.com 获取以下API信息 ↓↓↓↓↓↓↓
-	//const API_SEND_URL = env('CL_SEND_URL',''); //创蓝发送短信接口URL
-
-	//const API_VARIABLE_URL = env('VARIABLE_URL',''); //创蓝变量短信接口URL
-
-	//const API_BALANCE_QUERY_URL = env('CL_BALANCE_QUERY_URL',''); //创蓝短信余额查询接口URL
-
-	//const API_ACCOUNT = env('CL_ACCOUNT',''); // 创蓝API账号
-
-	//const API_PASSWORD = env('PASSWORD',''); // 创蓝API密码
+class ChuanglanSmsApi
+{
 	//参数的配置 请登录zz.253.com 获取以上API信息 ↑↑↑↑↑↑↑
-
 	/**
 	 * 发送短信
 	 *
@@ -32,17 +22,26 @@ class ChuanglanSmsApi {
 	 * @param string $msg 			短信内容
 	 * @param string $needstatus 	是否需要状态报告
 	 */
-	public function sendSMS($mobile, $msg, $needstatus = 'true') {
-
+	public function __construct($config)
+	{
+		$this->account = $config['account']; //账号
+		$this->password = $config['password']; //密码
+		$this->send_url = $config['send_url']; //发送的url
+		$this->balnce_query_url = $config['balnce_query_url'] ? $config['balnce_query_url'] : ''; //余额查询url
+		$this->variable_url = $config['variable_url'] ? $config['variable_url'] : ''; //发送变量短信url
+	}
+	public function sendSMS($mobile, $msg, $needstatus = 'true')
+	{
+		dd($this);
 		//创蓝接口参数
 		$postArr = array(
-			'account' => env('CL_ACCOUNT', ''),
-			'password' => env('PASSWORD', ''),
+			'account' => $this->account,
+			'password' => $this->password,
 			'msg' => urlencode($msg),
 			'phone' => $mobile,
 			'report' => $needstatus,
 		);
-		$result = $this->curlPost(env('CL_SEND_URL', ''), $postArr);
+		$result = $this->curlPost($this->send_url, $postArr);
 		return $result;
 	}
 
@@ -52,18 +51,19 @@ class ChuanglanSmsApi {
 	 * @param string $msg 			短信内容
 	 * @param string $params 	最多不能超过1000个参数组
 	 */
-	public function sendVariableSMS($msg, $params) {
+	public function sendVariableSMS($msg, $params)
+	{
 
 		//创蓝接口参数
 		$postArr = array(
-			'account' => env('CL_ACCOUNT', ''),
-			'password' => env('PASSWORD', ''),
+			'account' => $this->account,
+			'password' => $this->password,
 			'msg' => $msg,
 			'params' => $params,
 			'report' => 'true',
 		);
 
-		$result = $this->curlPost(env('VARIABLE_URL', ''), $postArr);
+		$result = $this->curlPost($this->variable_url, $postArr);
 		return $result;
 	}
 
@@ -72,14 +72,15 @@ class ChuanglanSmsApi {
 	 *
 	 *  查询地址
 	 */
-	public function queryBalance() {
+	public function queryBalance()
+	{
 
 		//查询参数
 		$postArr = array(
-			'account' => env('CL_ACCOUNT', ''),
-			'password' => env('PASSWORD', ''),
+			'account' => $this->account,
+			'password' => $this->password,
 		);
-		$result = $this->curlPost(env('CL_BALANCE_QUERY_URL', ''), $postArr);
+		$result = $this->curlPost($this->balnce_query_url, $postArr);
 		return $result;
 	}
 
@@ -90,13 +91,17 @@ class ChuanglanSmsApi {
 	 * @return mixed
 	 *
 	 */
-	private function curlPost($url, $postFields) {
+	private function curlPost($url, $postFields)
+	{
 		$postFields = json_encode($postFields);
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-			'Content-Type: application/json; charset=utf-8', //json版本需要填写  Content-Type: application/json;
-		)
+		curl_setopt(
+			$ch,
+			CURLOPT_HTTPHEADER,
+			array(
+				'Content-Type: application/json; charset=utf-8', //json版本需要填写  Content-Type: application/json;
+			)
 		);
 		curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4); //若果报错 name lookup timed out 报错时添加这一行代码
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -119,7 +124,4 @@ class ChuanglanSmsApi {
 		curl_close($ch);
 		return $result;
 	}
-
 }
-
-?>
