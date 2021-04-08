@@ -32,7 +32,7 @@ class ChuanglanSmsApi
 	}
 	public function sendSMS($mobile, $msg, $needstatus = 'true')
 	{
-		dd($this);
+		
 		//创蓝接口参数
 		$postArr = array(
 			'account' => $this->account,
