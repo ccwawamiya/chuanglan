@@ -32,7 +32,7 @@ class ChuanglanSmsApi
 	}
 	public function sendSMS($mobile, $msg, $needstatus = 'true')
 	{
-		
+
 		//创蓝接口参数
 		$postArr = array(
 			'account' => $this->account,
@@ -42,23 +42,7 @@ class ChuanglanSmsApi
 			'report' => $needstatus,
 		);
 		$result = $this->curlPost($this->send_url, $postArr);
-		if (!is_null(json_decode($result))) {
-			
-			$output = json_decode($result, true);
-			
-			if (isset($output['code']) && $output['code'] == '0') {
-				
-				return array('code' => true, 'msg' => '发送成功');
-				
-			} else {
-				
-				return array('code' => false, 'msg' => '发送失败');
-				
-			}
-		} else {
-			
-			return array('code' => false, 'msg' => $result['errorMsg']);
-		}
+		return $result;
 	}
 
 	/**
