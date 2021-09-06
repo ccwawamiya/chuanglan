@@ -37,7 +37,7 @@ class ChuanglanSmsApi
 		$postArr = array(
 			'account' => $this->account,
 			'password' => $this->password,
-			'msg' => urlencode($msg),
+			'msg' => $msg,
 			'phone' => $mobile,
 			'report' => $needstatus,
 		);
